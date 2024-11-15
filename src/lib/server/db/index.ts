@@ -6,7 +6,7 @@ if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 
 let client: mysql.Connection;
 
-async function getClient() {
+export async function getClient() {
 	if (!client) {
 		client = await mysql.createConnection(env.DATABASE_URL);
 	}

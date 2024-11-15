@@ -3,7 +3,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Input } from '$lib/components/ui/input';
+	import * as Card from '$lib/components/ui/card';
 	import type { PageData } from './$types';
+	import { flip } from 'svelte/animate';
+	import { fade } from 'svelte/transition';
 
 	let selectedUser: { id: number; age: number } | null = $state(null);
 	let age = $state('');
@@ -126,14 +129,24 @@
 				</Accordion.Content>
 			</Accordion.Item>
 		</Accordion.Root>
-	</div>
 
-	<h2 class="font-bolæd text-center text-xl">All Users</h2>
-	<section class="flex flex-col items-center">
-		<ul>
-			{#each data.users as user}
-				<li>{user.id} - {user.age} - {user.firstName} {user.lastName}</li>
-			{/each}
-		</ul>
-	</section>
+		<h2 class="mb-3 mt-6 text-center text-xl font-bold">All Users</h2>
+		<section class="flex flex-col items-center">
+			<div class="grid w-full grid-cols-1 gap-4 *:w-full">
+				{#each data.users as user (user.id)}
+					<div animate:flip={{ duration: 300 }} in:fade out:fade>
+						<Card.Root>
+							<Card.Header>
+								<Card.Title>{user.firstName} {user.lastName}</Card.Title>
+								<Card.Description>{user.age} years old</Card.Description>
+							</Card.Header>
+							<Card.Content>
+								<p>ID: {user.id}</p>
+							</Card.Content>
+						</Card.Root>
+					</div>
+				{/each}
+			</div>
+		</section>
+	</div>
 </main>

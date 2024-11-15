@@ -1,9 +1,13 @@
 import type { PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
+import { getClient } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
 import { user } from '$lib/server/db/schema';
+import { drizzle } from 'drizzle-orm/mysql2';
 
 export const load = (async () => {
+	const client = await getClient();
+	const db = drizzle(client);
+
 	const users = await db.select().from(user).execute();
 	const serializedUsers = users.map((u) => ({
 		id: u.id,
@@ -19,6 +23,8 @@ export const load = (async () => {
 
 export const actions = {
 	addUser: async ({ request }) => {
+		const client = await getClient();
+		const db = drizzle(client);
 		console.log('addUser');
 		const formData = await request.formData();
 		const age: number = formData.get('age') as any;
@@ -27,6 +33,8 @@ export const actions = {
 		await db.insert(user).values({ age, firstName, lastName }).execute();
 	},
 	updateUser: async ({ request }) => {
+		const client = await getClient();
+		const db = drizzle(client);
 		console.log('updateUser');
 		const formData = await request.formData();
 		const id: number = Number(formData.get('id'));
@@ -36,12 +44,16 @@ export const actions = {
 		await db.update(user).set({ age, firstName, lastName }).where(eq(user.id, id)).execute();
 	},
 	deleteUser: async ({ request }) => {
+		const client = await getClient();
+		const db = drizzle(client);
 		console.log('deleteUser');
 		const formData = await request.formData();
 		const id: number = Number(formData.get('id'));
 		await db.delete(user).where(eq(user.id, id));
 	},
 	selectUser: async ({ request }) => {
+		const client = await getClient();
+		const db = drizzle(client);
 		console.log('selectUser');
 		const formData = await request.formData();
 		const id: number = Number(formData.get('id'));
@@ -49,6 +61,8 @@ export const actions = {
 		return { user: userToReturn[0] };
 	},
 	selectAllUsers: async () => {
+		const client = await getClient();
+		const db = drizzle(client);
 		console.log('selectAllUsers');
 		const users = await db.select().from(user).execute();
 		const serializedUsers = users.map((u) => ({
